@@ -1,10 +1,8 @@
 package test.java.alphabet;
 
-import main.java.alphabet.Alphabet;
+import main.java.Main;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -13,67 +11,109 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class AlphabetTest {
 
-    Alphabet alphabet;
-
-    int R, C;
-    Character[][] map;
+    Main.Alphabet alphabet;
+    String[][] map;
 
     @BeforeEach
     void setUp() {
-        R = 4;
-        C = 4;
-        alphabet = new Alphabet(R, C);
+        map = new String[255][20];
     }
 
     private String[][] getMap(int row, int column) {
         String[][] map = new String[row][column];
 
         map[0][0] = "A";
-        map[0][1] = "B";
-        map[0][2] = "C";
-        map[0][3] = "E";
+        map[0][1] = "A";
+        map[0][2] = "E";
+        map[0][3] = "F";
         map[1][0] = "B";
-        map[1][1] = "D";
-        map[1][2] = "H";
-        map[1][3] = "I";
-        map[2][0] = "C";
-        map[2][1] = "F";
-        map[2][2] = "A";
-        map[2][3] = "B";
-        map[3][0] = "E";
-        map[3][1] = "G";
+        map[1][1] = "C";
+        map[1][2] = "D";
+        map[1][3] = "G";
+        map[2][0] = "J";
+        map[2][1] = "L";
+        map[2][2] = "O";
+        map[2][3] = "H";
+        map[3][0] = "N";
+        map[3][1] = "K";
         map[3][2] = "J";
-        map[3][3] = "K";
+        map[3][3] = "I";
 
         return map;
     }
 
     @Test
     public void test() {
+        alphabet = new Main.Alphabet(4, 4);
 
-        assertTrue(alphabet.solve(getMap(R, C)) == 7);
+        map[0][0] = "A";
+        map[0][1] = "A";
+        map[0][2] = "E";
+        map[0][3] = "F";
+        map[1][0] = "B";
+        map[1][1] = "C";
+        map[1][2] = "D";
+        map[1][3] = "G";
+        map[2][0] = "J";
+        map[2][1] = "L";
+        map[2][2] = "O";
+        map[2][3] = "H";
+        map[3][0] = "N";
+        map[3][1] = "K";
+        map[3][2] = "J";
+        map[3][3] = "I";
+
+        assertTrue(alphabet.solve(map) == 14);
     }
 
     @Test
-    public void testPush() {
-        int x = 0, y =1, l = 0;
-        alphabet.push(x, y, l);
-        LinkedList<Integer[]> values = (LinkedList) alphabet.getQueue();
-        Integer[] value = values.get(values.size()-1);
-        assertTrue(value[0] == x && value[1] == y);
+    public void test2() {
+
+        alphabet = new Main.Alphabet(4, 4);
+
+        map[0][0] = "A";
+        map[0][1] = "A";
+        map[0][2] = "E";
+        map[0][3] = "F";
+        map[1][0] = "B";
+        map[1][1] = "C";
+        map[1][2] = "D";
+        map[1][3] = "G";
+        map[2][0] = "J";
+        map[2][1] = "L";
+        map[2][2] = "O";
+        map[2][3] = "H";
+        map[3][0] = "N";
+        map[3][1] = "K";
+        map[3][2] = "J";
+        map[3][3] = "I";
+
+        assertTrue(alphabet.solve(map) == 14);
     }
 
     @Test
-    public void testPop() {
-        int x = 0, y =1, l=0;
-        int x1 = 1, y1 =0, l1=1;
-        alphabet.push(x, y, l);
-        alphabet.push(x1, y1, l1);
-        Integer[] value = alphabet.pop();
-        assertTrue(value[0] == x && value[1] == y);
+    public void testMapIsEmpty() {
+        alphabet = new Main.Alphabet(0, 0);
+        assertTrue(alphabet.solve(map) == 0);
+    }
 
-        LinkedList<Integer[]> values = (LinkedList) alphabet.getQueue();
-        Integer[] value1 = values.get(values.size()-1);
-        assertTrue(value1[0] == x1 && value1[1] == y1);
+    @Test
+    public void testMapIsEmpty2() {
+        alphabet = new Main.Alphabet(2, 2);
+        assertTrue(alphabet.solve(map) == 0);
+    }
+
+    @Test
+    public void testMapIsNull() {
+        alphabet = new Main.Alphabet(0, 0);
+        String[][] map = null;
+        assertTrue(alphabet.solve(map) == 0);
+    }
+
+    @Test
+    public void testMapIsOne() {
+        alphabet = new Main.Alphabet(1, 1);
+        map[0][0] = "A";
+        assertTrue(alphabet.solve(map) == 1);
     }
 }

@@ -10,9 +10,12 @@ public class Main {
         int R = scanner.nextInt();
         int C = scanner.nextInt();
 
+        if (R < 1 || C > 20)
+            return;
+
         scanner.nextLine();
 
-        String[][] map = new String[R][C];
+        String[][] map = new String[255][20];
         for (int i=0; i<R; i++) {
             String str = scanner.next();
             for (int j=0; j<C; j++) {
@@ -21,97 +24,100 @@ public class Main {
             scanner.nextLine();
         }
 
-        AlphabetForSubmit alphabet = new AlphabetForSubmit(R, C);
-        alphabet.solve(map);
-    }
-}
-
-class AlphabetForSubmit {
-
-    private int row, column;
-    private Queue<AlphabetQueueData> queue;
-
-    public AlphabetForSubmit(int row, int column) {
-        this.row = row;
-        this.column = column;
-        queue = new LinkedList<>();
+        Alphabet alphabet = new Alphabet(R, C);
+        System.out.println(alphabet.solve(map));
     }
 
-    public int solve(String[][] map) {
-        int x = 0, y = 0, l = 1;
-        push(x, y, l, Arrays.asList(map[x][y]));
-        int max = l;
+    public static class Alphabet {
 
-        while(!queue.isEmpty()) {
+        private int row;
+        private int column;
+        private Queue<AlphabetQueueData> queue;
 
-            AlphabetQueueData location = pop();
-            x = location.x;
-            y = location.y;
-            l = location.l;
-            List<String> alphabets = location.alphabets;
-
-            if (x+1 <= row-1 && !alphabets.contains(map[x+1][y])) {
-                List<String> alphabetsToPush = new ArrayList<>();
-                alphabetsToPush.addAll(alphabets);
-                alphabetsToPush.add(map[x+1][y]);
-                push(x+1, y, l+1, alphabetsToPush);
-            }
-            if (x-1 >= 0 && !alphabets.contains(map[x-1][y])) {
-                List<String> alphabetsToPush = new ArrayList<>();
-                alphabetsToPush.addAll(alphabets);
-                alphabetsToPush.add(map[x-1][y]);
-                push(x-1, y, l+1, alphabetsToPush);
-            }
-            if (y+1 <= column-1 && !alphabets.contains(map[x][y+1])) {
-                List<String> alphabetsToPush = new ArrayList<>();
-                alphabetsToPush.addAll(alphabets);
-                alphabetsToPush.add(map[x][y+1]);
-                push(x, y+1, l+1, alphabetsToPush);
-            }
-            if (y-1 >= 0 && !alphabets.contains(map[x][y-1])) {
-                List<String> alphabetsToPush = new ArrayList<>();
-                alphabetsToPush.addAll(alphabets);
-                alphabetsToPush.add(map[x][y-1]);
-                push(x, y-1, l+1, alphabetsToPush);
-            }
-
-            if (max < l)
-                max = l;
+        public Alphabet(int row, int column) {
+            this.row = row;
+            this.column = column;
+            queue = new LinkedList<>();
         }
 
-        System.out.println(max);
-        return max;
-    }
+        public int solve(String[][] map) {
 
-    public void push(int x, int y, int l, List<String> alphabet) {
-        queue.add(new AlphabetQueueData(x, y, l, alphabet));
-    }
+            if (map == null)
+                return 0;
 
-    public AlphabetQueueData pop() {
-        AlphabetQueueData data = queue.poll();
-        queue.remove(data);
-        return data;
-    }
+            int x = 0, y = 0, l = 1;
+            push(x, y, l, Arrays.asList(map[x][y]));
+            int max = l;
 
-    public Queue<AlphabetQueueData> getQueue() {
-        return queue;
-    }
-}
+            while(!queue.isEmpty()) {
 
-class AlphabetQueueData {
-    int x;
-    int y;
-    int l;
-    List<String> alphabets = new ArrayList<>();
+                AlphabetQueueData location = pop();
+                x = location.x;
+                y = location.y;
+                l = location.l;
+                List<String> alphabets = location.alphabets;
 
-    public AlphabetQueueData(int x, int y, int l, List<String> alphabets) {
-        this.x = x;
-        this.y = y;
-        this.l = l;
-        this.alphabets = alphabets;
-    }
+                if (map[x][y] == null)
+                    return 0;
 
-    public void add(String alphabet) {
-        this.alphabets.add(alphabet);
+                if (x+1 <= row-1 && !alphabets.contains(map[x+1][y])) {
+                    List<String> alphabetsToPush = new ArrayList<>();
+                    alphabetsToPush.addAll(alphabets);
+                    alphabetsToPush.add(map[x+1][y]);
+                    push(x+1, y, l+1, alphabetsToPush);
+                }
+                if (x-1 >= 0 && !alphabets.contains(map[x-1][y])) {
+                    List<String> alphabetsToPush = new ArrayList<>();
+                    alphabetsToPush.addAll(alphabets);
+                    alphabetsToPush.add(map[x-1][y]);
+                    push(x-1, y, l+1, alphabetsToPush);
+                }
+                if (y+1 <= column-1 && !alphabets.contains(map[x][y+1])) {
+                    List<String> alphabetsToPush = new ArrayList<>();
+                    alphabetsToPush.addAll(alphabets);
+                    alphabetsToPush.add(map[x][y+1]);
+                    push(x, y+1, l+1, alphabetsToPush);
+                }
+                if (y-1 >= 0 && !alphabets.contains(map[x][y-1])) {
+                    List<String> alphabetsToPush = new ArrayList<>();
+                    alphabetsToPush.addAll(alphabets);
+                    alphabetsToPush.add(map[x][y-1]);
+                    push(x, y-1, l+1, alphabetsToPush);
+                }
+
+                if (max < l)
+                    max = l;
+            }
+
+            return max;
+        }
+
+        public void push(int x, int y, int l, List<String> alphabet) {
+            queue.add(new AlphabetQueueData(x, y, l, alphabet));
+        }
+
+        public AlphabetQueueData pop() {
+            AlphabetQueueData data = queue.poll();
+            queue.remove(data);
+            return data;
+        }
+
+        class AlphabetQueueData {
+            int x;
+            int y;
+            int l;
+            List<String> alphabets = new ArrayList<>();
+
+            public AlphabetQueueData(int x, int y, int l, List<String> alphabets) {
+                this.x = x;
+                this.y = y;
+                this.l = l;
+                this.alphabets = alphabets;
+            }
+
+            public void add(String alphabet) {
+                this.alphabets.add(alphabet);
+            }
+        }
     }
 }
