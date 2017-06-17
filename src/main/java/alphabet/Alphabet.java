@@ -8,13 +8,11 @@ import java.util.*;
 public class Alphabet {
 
     private int row, column;
-    private Map<String, Boolean> charList;
-    private Queue<Integer[]> queue;
+    private Queue<AlphabetQueueData> queue;
 
     public Alphabet(int row, int column) {
         this.row = row;
         this.column = column;
-        charList = new HashMap<>();
         queue = new LinkedList<>();
     }
 
@@ -22,65 +20,63 @@ public class Alphabet {
         showMap(map);
 
         int x = 0, y = 0, l = 1;
-        String c = map[x][y];
-        charList.put(c, true);
-        push(x, y, l);
+        push(x, y, l, Arrays.asList(map[x][y]));
         int max = l;
 
         while(!queue.isEmpty()) {
 
             showQueue();
 
-            Integer[] location = pop();
-            x = location[0];
-            y = location[1];
-            l = location[2];
+            AlphabetQueueData location = pop();
+            x = location.x;
+            y = location.y;
+            l = location.l;
+            List<String> alphabets = location.alphabets;
 
-            List<String> alphabets = new ArrayList<>();
-
-            if (x+1 <= row-1 && charList.get(map[x+1][y]) == null) {
-                push(x+1, y, l+1);
-                alphabets.add(map[x+1][y]);
+            if (x+1 <= row-1 && !alphabets.contains(map[x+1][y])) {
+                List<String> alphabetsToPush = new ArrayList<>();
+                alphabetsToPush.addAll(alphabets);
+                alphabetsToPush.add(map[x+1][y]);
+                push(x+1, y, l+1, alphabetsToPush);
             }
-            if (x-1 >= 0 && charList.get(map[x-1][y]) == null) {
-                push(x-1, y, l+1);
-                alphabets.add(map[x-1][y]);
+            if (x-1 >= 0 && !alphabets.contains(map[x-1][y])) {
+                List<String> alphabetsToPush = new ArrayList<>();
+                alphabetsToPush.addAll(alphabets);
+                alphabetsToPush.add(map[x-1][y]);
+                push(x-1, y, l+1, alphabetsToPush);
             }
-            if (y+1 <= column-1 && charList.get(map[x][y+1]) == null) {
-                push(x, y+1, l+1);
-                alphabets.add(map[x][y+1]);
+            if (y+1 <= column-1 && !alphabets.contains(map[x][y+1])) {
+                List<String> alphabetsToPush = new ArrayList<>();
+                alphabetsToPush.addAll(alphabets);
+                alphabetsToPush.add(map[x][y+1]);
+                push(x, y+1, l+1, alphabetsToPush);
             }
-            if (y-1 >= 0 && charList.get(map[x][y-1]) == null) {
-                push(x, y-1, l+1);
-                alphabets.add(map[x][y-1]);
-            }
-
-            if (alphabets.size() != 0) {
-                for (String alphabet : alphabets) {
-                    charList.put(alphabet, true);
-                }
+            if (y-1 >= 0 && !alphabets.contains(map[x][y-1])) {
+                List<String> alphabetsToPush = new ArrayList<>();
+                alphabetsToPush.addAll(alphabets);
+                alphabetsToPush.add(map[x][y-1]);
+                push(x, y-1, l+1, alphabetsToPush);
             }
 
             if (max < l)
                 max = l;
         }
 
-        System.out.println("max : " + max);
+        System.out.println(max);
         return max;
     }
 
-    public void push(int x, int y, int l) {
-        Integer location[] = {x, y, l};
-        queue.add(location);
+    public void push(int x, int y, int l, List<String> alphabet) {
+        queue.add(new AlphabetQueueData(x, y, l, alphabet));
     }
 
-    public Integer[] pop() {
-        Integer[] pop = queue.poll();
-        queue.remove(pop);
-        return pop;
+    public AlphabetQueueData pop() {
+        AlphabetQueueData data = queue.poll();
+        queue.remove(data);
+        return data;
     }
 
-    public Queue<Integer[]> getQueue() {
+    public Queue<AlphabetQueueData> getQueue() {
         return queue;
     }
 
@@ -95,9 +91,27 @@ public class Alphabet {
 
     private void showQueue() {
         System.out.print("[");
-        for (Integer[] i : queue) {
-            System.out.print(String.format("(%d,%d)", i[0], i[1]));
+        for (AlphabetQueueData data : queue) {
+            System.out.print(String.format("(%d,%d)", data.x, data.y));
         }
         System.out.println("]");
+    }
+
+    class AlphabetQueueData {
+        int x;
+        int y;
+        int l;
+        List<String> alphabets = new ArrayList<>();
+
+        public AlphabetQueueData(int x, int y, int l, List<String> alphabets) {
+            this.x = x;
+            this.y = y;
+            this.l = l;
+            this.alphabets = alphabets;
+        }
+
+        public void add(String alphabet) {
+            this.alphabets.add(alphabet);
+        }
     }
 }
